@@ -9,3 +9,4 @@ data/tracker.db
 frontend/dist/
 .vscode/
 .idea/
+.env.tokens
