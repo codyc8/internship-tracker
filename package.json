@@ -1,13 +1,14 @@
 {
   "name": "internship-tracker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "node --watch server/index.js",
     "dev:frontend": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "scrape": "node server/cli/run-scrapers.js"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -15,7 +16,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "puppeteer": "^21.6.1",
-    "axios": "^1.6.2"
+    "axios": "^1.6.2",
+    "node-cron": "^3.0.2"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { dbAll, dbRun } from '../db.js';
+import { getRecommendedJobs } from '../services/job-matcher.js';
+import { runAllScrapers, getJobStats } from '../services/scraper-runner.js';
 
 export const jobsRouter = Router();
 
@@ -9,6 +11,17 @@ jobsRouter.get('/', async (req, res) => {
     const jobs = await dbAll(`
       SELECT * FROM jobs WHERE seen = 0 ORDER BY posted_date DESC LIMIT 50
     `);
+    res.json(jobs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get recommended jobs (high match score)
+jobsRouter.get('/recommended', async (req, res) => {
+  try {
+    const limit = req.query.limit || 10;
+    const jobs = await getRecommendedJobs(parseInt(limit));
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -28,9 +41,18 @@ jobsRouter.post('/:id/seen', async (req, res) => {
 // Get stats
 jobsRouter.get('/stats/summary', async (req, res) => {
   try {
-    const unseen = await dbAll(`SELECT COUNT(*) as count FROM jobs WHERE seen = 0`);
-    const total = await dbAll(`SELECT COUNT(*) as count FROM jobs`);
-    res.json({ unseen: unseen[0].count, total: total[0].count });
+    const stats = await getJobStats();
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Trigger scraping (admin endpoint)
+jobsRouter.post('/scrape/run', async (req, res) => {
+  try {
+    const results = await runAllScrapers();
+    res.json({ success: true, results });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

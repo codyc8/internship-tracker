@@ -40,6 +40,8 @@ export async function initDatabase() {
           description TEXT,
           keywords TEXT,
           seen INTEGER DEFAULT 0,
+          match_score INTEGER DEFAULT NULL,
+          matched_skills INTEGER DEFAULT 0,
           created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
       `);
@@ -52,9 +54,27 @@ export async function initDatabase() {
           content TEXT NOT NULL,
           created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
-      `, (err) => {
-        if (err) reject(err);
-        else resolve();
+      `);
+
+      // Add columns to jobs table if they don't exist (migration)
+      db.run(`PRAGMA table_info(jobs)`, (err, columns) => {
+        if (!err && columns) {
+          const columnNames = columns.map(c => c.name);
+          
+          if (!columnNames.includes('match_score')) {
+            db.run(`ALTER TABLE jobs ADD COLUMN match_score INTEGER DEFAULT NULL`);
+          }
+          if (!columnNames.includes('matched_skills')) {
+            db.run(`ALTER TABLE jobs ADD COLUMN matched_skills INTEGER DEFAULT 0`, (err) => {
+              if (err) reject(err);
+              else resolve();
+            });
+          } else {
+            resolve();
+          }
+        } else {
+          resolve();
+        }
       });
     });
   });
