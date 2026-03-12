@@ -2,27 +2,37 @@ import puppeteer from 'puppeteer';
 import { dbRun } from '../db.js';
 
 // Top 20 companies still actively recruiting internships in March 2026
+// Prioritize companies that frequently hire undergrad interns
 const TARGET_COMPANIES = [
-  { name: 'Microsoft', careersUrl: 'https://careers.microsoft.com/us/en/search-results?keywords=intern' },
-  { name: 'Apple', careersUrl: 'https://jobs.apple.com/?search=intern' },
-  { name: 'Amazon', careersUrl: 'https://amazon.jobs/search?keywords=intern' },
-  { name: 'Goldman Sachs', careersUrl: 'https://www.goldmansachs.com/careers/students/programs/' },
-  { name: 'JPMorgan Chase', careersUrl: 'https://careers.jpmorgan.com/us/en/students' },
-  { name: 'Stripe', careersUrl: 'https://stripe.com/jobs/search?q=intern' },
-  { name: 'Notion', careersUrl: 'https://www.notion.so/careers' },
-  { name: 'Figma', careersUrl: 'https://fig.ma/careers' },
-  { name: 'Canva', careersUrl: 'https://www.canva.com/careers/' },
-  { name: 'Databricks', careersUrl: 'https://databricks.com/careers' },
-  { name: 'Chime', careersUrl: 'https://www.chime.com/careers/' },
-  { name: 'Rippling', careersUrl: 'https://www.rippling.com/careers' },
-  { name: 'Scale AI', careersUrl: 'https://scale.com/careers' },
-  { name: 'Anthropic', careersUrl: 'https://www.anthropic.com/careers' },
-  { name: 'OpenAI', careersUrl: 'https://openai.com/careers' },
-  { name: 'Hugging Face', careersUrl: 'https://huggingface.co/jobs' },
-  { name: 'Anduril', careersUrl: 'https://www.anduril.com/careers' },
-  { name: 'Superhuman', careersUrl: 'https://superhuman.com/careers' },
-  { name: 'Retool', careersUrl: 'https://retool.com/careers' },
-  { name: 'Webflow', careersUrl: 'https://webflow.com/careers' }
+  // FAANG + Big Tech
+  { name: 'Microsoft', careersUrl: 'https://careers.microsoft.com/us/en/search-results?keywords=intern', location: 'Multiple' },
+  { name: 'Apple', careersUrl: 'https://jobs.apple.com/?search=intern', location: 'California' },
+  { name: 'Amazon', careersUrl: 'https://amazon.jobs/search?keywords=intern', location: 'Multiple' },
+  { name: 'Google', careersUrl: 'https://careers.google.com/jobs?src=Online/Job%20Board/LinkedIn', location: 'California' },
+  { name: 'Meta', careersUrl: 'https://www.metacareers.com/jobs/', location: 'California' },
+  
+  // Finance
+  { name: 'Goldman Sachs', careersUrl: 'https://www.goldmansachs.com/careers/students/programs/', location: 'New York' },
+  { name: 'JPMorgan Chase', careersUrl: 'https://careers.jpmorgan.com/us/en/students', location: 'New York' },
+  
+  // Startups (Startup-friendly for interns)
+  { name: 'Stripe', careersUrl: 'https://stripe.com/jobs/search?q=intern', location: 'Remote' },
+  { name: 'Notion', careersUrl: 'https://www.notion.so/careers', location: 'Remote' },
+  { name: 'Figma', careersUrl: 'https://fig.ma/careers', location: 'Remote' },
+  { name: 'Canva', careersUrl: 'https://www.canva.com/careers/', location: 'Remote' },
+  { name: 'Databricks', careersUrl: 'https://databricks.com/careers', location: 'California' },
+  { name: 'Rippling', careersUrl: 'https://www.rippling.com/careers', location: 'California' },
+  { name: 'Scale AI', careersUrl: 'https://scale.com/careers', location: 'California' },
+  
+  // AI/ML Companies
+  { name: 'Anthropic', careersUrl: 'https://www.anthropic.com/careers', location: 'California' },
+  { name: 'OpenAI', careersUrl: 'https://openai.com/careers', location: 'New York' },
+  { name: 'Hugging Face', careersUrl: 'https://huggingface.co/jobs', location: 'Remote' },
+  
+  // Other Hot Startups
+  { name: 'Anduril', careersUrl: 'https://www.anduril.com/careers', location: 'California' },
+  { name: 'Retool', careersUrl: 'https://retool.com/careers', location: 'Remote' },
+  { name: 'Webflow', careersUrl: 'https://webflow.com/careers', location: 'Remote' }
 ];
 
 export async function scrapeCompanyPages() {

@@ -9,7 +9,8 @@ export async function scrapeWellfound() {
 
   try {
     const page = await browser.newPage();
-    const searchUrl = 'https://wellfound.com/jobs?job_type=internship&experience_level=intern&role=software_engineer';
+    // Wellfound internship search - all US locations
+    const searchUrl = 'https://wellfound.com/jobs?job_type=internship&role=software_engineer&locations=United%20States';
     
     await page.goto(searchUrl, { waitUntil: 'networkidle2', timeout: 30000 });
 
