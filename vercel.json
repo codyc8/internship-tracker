@@ -1,7 +1,13 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "http://93.188.160.237:3099/api/:path*"
+    }
+  ]
 }
